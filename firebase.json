@@ -1,0 +1,11 @@
+{
+  "functions": {
+    "predeploy": []
+  },
+  "emulators": {
+    "functions": {
+      "port": "6001"
+    }
+  }
+
+}
