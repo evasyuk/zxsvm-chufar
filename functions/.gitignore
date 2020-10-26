@@ -5,3 +5,5 @@ node_modules/
 /.env.production
 
 /src/helper/_AppConfigGenerated.js
+
+/credentials-sheet.json
