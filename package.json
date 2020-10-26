@@ -1,12 +1,11 @@
 {
   "name": "zxsvm-chufar",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "cd functions && firebase emulators:start --only functions"
+    "serve": "cd functions && npm run serve"
   },
   "author": "evasyuk",
-  "license": "ISC"
+  "license": "MIT"
 }
