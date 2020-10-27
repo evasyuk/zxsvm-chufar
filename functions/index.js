@@ -7,6 +7,7 @@ require("@babel/register")({
   extensions: [".js"],
 })
 require('@babel/polyfill')
+require('./src/helper/debug')
 const app = require('./src/App').default
 
 // // Create and Deploy Your First Cloud Functions

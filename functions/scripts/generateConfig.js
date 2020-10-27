@@ -49,7 +49,7 @@ ${exportLines}
 
   require('fs').writeFileSync(firebaseEnvPath, template)
 
-  console.log('\nAppConfigGenerated generated successfully\n')
+  debug('\nAppConfigGenerated generated successfully\n')
 }
 
 generateFileConfig(parseResult)

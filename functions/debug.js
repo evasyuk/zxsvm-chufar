@@ -5,14 +5,14 @@ require("@babel/register")({
   extensions: [".js"],
 })
 require('@babel/polyfill')
+require('./src/helper/debug')
 const myTelegram = require('./src/MyTelegram')
-const sheets = require('./src/Sheets')
 
 const bot = myTelegram.getMyBot(true)
 bot.launch()
   .then((what) => {
-    console.log('bot polling is running')
+    debug('bot polling is running')
   })
   .catch((err) => {
-    console.log('?', err)
+    debug('?', err)
   })
