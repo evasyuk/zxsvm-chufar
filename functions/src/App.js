@@ -1,11 +1,13 @@
 import express from 'express'
-import { setWebhook, handleUpdate } from './MyTelegram'
+import { getMyBot, setWebhook, handleUpdate } from './MyTelegram'
 import * as wtf from './Sheets'
 
 import { BASE_URL, WEBHOOK_PATH, PRJ_NAME } from './helper/_AppConfigGenerated'
 
 const app = express()
 const cors = require('cors')
+
+getMyBot()
 
 app.use(cors({ origin: true }))
 

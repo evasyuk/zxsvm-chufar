@@ -1,11 +1,25 @@
 import axios from 'axios'
 import { BOT_TOKEN } from './helper/_AppConfigGenerated'
+import { addUser } from './Sheets'
 const Telegraf = require('telegraf')
 
-const bot = new Telegraf(BOT_TOKEN)
-bot.on('text', ({ replyWithHTML }) => replyWithHTML('<b>sup, gigga</b>'))
+let bot
 
 const getTgMethod = (TOKEN = BOT_TOKEN) => (method) => `https://api.telegram.org/bot${TOKEN}/${method}`
+
+export const getMyBot = (debug = false) => {
+  bot = new Telegraf(BOT_TOKEN)
+  if (debug) {
+    bot.use(async (ctx, next) => {
+      const upd = ctx.update
+      console.log('update', upd)
+      await addUser(upd)
+      await next()
+    })
+  }
+  bot.on('text', ({ replyWithHTML }) => replyWithHTML('<b>sup</b>'))
+  return bot
+}
 
 export const handleUpdate = (update) => {
   return bot.handleUpdate(update)
