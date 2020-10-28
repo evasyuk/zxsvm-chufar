@@ -31,13 +31,17 @@ class BaseTab {
     let row = []
     let internalIndex = 0
 
-    const range = `${ROWS_ABC[startC]}${rIndex}:${ROWS_ABC[endC]}${rIndex}`
+    const magic = 10
+
+    const range = `${ROWS_ABC[startC]}${(rIndex - magic) < 1 ? 1 : (rIndex - magic)}:${ROWS_ABC[endC + magic]}${rIndex + magic}`
     await this.sheet.loadCells(range)
 
-    for (let cIndex = startC; cIndex < endC; cIndex += 1, internalIndex += 1) {
+    for (let cIndex = startC; cIndex <= endC; cIndex += 1, internalIndex += 1) {
       const cell = await this.sheet.getCell(rIndex, cIndex)
       row[internalIndex] = {
+        formattedValue: cell.formattedValue,
         value: cell.value,
+        valueType: cell.valueType,
         rIndex,
         cIndex,
       }
@@ -56,7 +60,9 @@ class BaseTab {
     for (let rIndex = startR; rIndex < endR; rIndex += 1, internalIndex += 1) {
       const cell = await this.sheet.getCell(rIndex, cIndex)
       column[internalIndex] = {
+        formattedValue: cell.formattedValue,
         value: cell.value,
+        valueType: cell.valueType,
         rIndex,
         cIndex,
       }
@@ -65,16 +71,7 @@ class BaseTab {
   }
 
   getRealRow = async (rIndex) => {
-    const row = []
-
-    for (let cIndex = 0; cIndex < this.headerRow.length; cIndex += 1) {
-      const cell = await this.sheet.getCell(rIndex, cIndex)
-      row[cIndex] = {
-        value: cell.value,
-        rIndex,
-        cIndex,
-      }
-    }
+    const row = await this._readRow(rIndex, 0, this.headerRow.length)
 
     return {
       headerRow: this.headerRow,
@@ -95,6 +92,28 @@ class BaseTab {
       rIndex,
       value: result,
     }
+  }
+
+  getObjectsById = async (indexes) => {
+    let finalResult = []
+
+    const promises = indexes.map(async (rIndex) => {
+      let result = {}
+      const row = await this.getRealRow(rIndex)
+
+      row.headerRow.forEach((key, index) => {
+        result[key] = row.row[index].value
+      })
+
+      return {
+        rIndex,
+        value: result,
+      }
+    })
+
+    finalResult = await Promise.all(promises)
+
+    return finalResult
   }
 
   getRealColumn = async (cIndex) => {
@@ -157,7 +176,7 @@ class UserTab extends BaseTab {
 
     const column_id = await this.getRealColumn(0)
 
-    const found = column_id.values.find((it) => it.value === id)
+    const found = column_id.values.find((it) => it.formattedValue == id)
 
     if (found) {
       const objMeta = await this.getObjectById(found.rIndex)
@@ -184,12 +203,14 @@ class EventsTab extends BaseTab {
   queryEventsByDate = async (date = '12/11/2020') => {
     const column_date = await this.getRealColumn(0)
 
-    console.log('column_date', column_date)
+    const itemIds = column_date.values
+      .filter((it) => it.formattedValue == date)
+      .map((it) => it.rIndex)
 
-    const items = column_date.filter((it) => it.value === date)
-    console.log(items)
+    const realItems = await this.getObjectsById(itemIds)
+    debug('queryEventsByDate', date, realItems)
 
-    return []
+    return realItems
   }
 
   queryEventsInRange = async (startDate, endDate) => {

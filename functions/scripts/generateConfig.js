@@ -1,12 +1,19 @@
 const dirPath = `${require('path').dirname(require.main.filename)}/..`
-const envPath = `${dirPath}/.env`
+const envPathDev = `${dirPath}/.env.dev`
+const envPathProd = `${dirPath}/.env.production`
 const firebaseEnvPath = `${dirPath}/src/helper/_AppConfigGenerated.js`
 
 const readValues = () => {
   const parseResult = {}
   const failedLines = []
 
-  const lines = require('fs').readFileSync(envPath, 'utf-8')
+  if (process.env.MODE === undefined) {
+    throw Error('MODE variable is not specified. Can not proceed. Please, check ".env.dev" and "dev.production" files')
+  }
+
+  const filePath = process.env.MODE ? envPathDev :  envPathProd
+
+  const lines = require('fs').readFileSync(filePath , 'utf-8')
     .split('\n')
 
   lines.forEach((line) => {
@@ -49,7 +56,7 @@ ${exportLines}
 
   require('fs').writeFileSync(firebaseEnvPath, template)
 
-  debug('\nAppConfigGenerated generated successfully\n')
+  console.log('\nAppConfigGenerated generated successfully\n')
 }
 
 generateFileConfig(parseResult)

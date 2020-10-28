@@ -13,6 +13,33 @@ const getTgUser = (tgMessage) => {
   return { id, is_bot, first_name, username, language_code }
 }
 
+const renderEvent = (event) => {
+  const pureEvent = event.value || event
+
+  const inlineDayCounter = pureEvent.curr_day && pureEvent.all_days
+    ? `\nДень ${pureEvent.curr_day} з ${pureEvent.all_days}\n` : ''
+
+  const msg =
+`<b>${pureEvent.title}</b>
+${inlineDayCounter}
+<i>Больше информации: ${pureEvent.info}</i>
+`
+
+  return msg
+}
+
+const renderEvents = (events) => {
+  let finalMessage = ''
+  const textMessages = events.map((it) => renderEvent(it))
+
+  textMessages.forEach((it) => {
+    finalMessage += it
+    finalMessage += '\n'
+  })
+
+  return finalMessage.trimEnd()
+}
+
 export const getMyBot = (debugEnabled = false) => {
   bot = new Telegraf(BOT_TOKEN)
   if (debugEnabled) {
@@ -33,10 +60,14 @@ export const getMyBot = (debugEnabled = false) => {
     mySheet.waitForInit()
       .then(() => {
         mySheet.eventsSheet.queryEventsByDate()
-          .then((dates) => {
-            // TODO: send message to user
+          .then((events) => {
+            const sendingBack = renderEvents(events)
+            debug(sendingBack)
+
+            return ctx.replyWithHTML(sendingBack)
           })
-          .finally(async () => {
+          .catch((error) => {
+            console.error(error)
             return ctx.reply('today')
           })
       })

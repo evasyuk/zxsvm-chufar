@@ -2,9 +2,10 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "serve": "scripts/generate.app.config.sh && firebase emulators:start --only functions",
+    "debug": "MODE=DEV scripts/generate.app.config.sh && node debug.js",
+    "serve": "MODE=DEV scripts/generate.app.config.sh && firebase emulators:start --only functions",
+    "deploy": "MODE=PROD scripts/generate.app.config.sh && firebase deploy --only functions",
     "shell": "firebase functions:shell",
-    "deploy": "scripts/generate.app.config.sh && firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
   "engines": {

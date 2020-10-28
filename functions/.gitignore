@@ -1,7 +1,7 @@
 node_modules/
 /firebase-adminsdk.json
 
-/.env
+/.env.dev
 /.env.production
 
 /src/helper/_AppConfigGenerated.js
