@@ -29,6 +29,21 @@ export const getMyBot = (debugEnabled = false) => {
       await next()
     })
   }
+  bot.hears('today', (ctx) => {
+    mySheet.waitForInit()
+      .then(() => {
+        mySheet.eventsSheet.queryEventsByDate()
+          .then((dates) => {
+            // TODO: send message to user
+          })
+          .finally(async () => {
+            return ctx.reply('today')
+          })
+      })
+      .catch((err) => {
+        console.log('err', err)
+      })
+  })
   bot.on('text', ({ replyWithHTML }) => replyWithHTML('<b>sup</b>'))
   return bot
 }

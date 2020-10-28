@@ -19,6 +19,10 @@ class BaseTab {
     this.sheet = sheet
     this.headerRow = headerRow
 
+    await this.sheet.loadCells({ // GridRange object
+      startRowIndex: 0, endRowIndex: 10, startColumnIndex:0, endColumnIndex: 10
+    })
+
     this.ready = true
     debug('tab initialized', this.sheetId, this.headerRow)
   }
@@ -147,9 +151,9 @@ class UserTab extends BaseTab {
   findExistingUser = async (user) => {
     const id = user.id
 
-    await this.sheet.loadCells({ // GridRange object
-      startRowIndex: 0, endRowIndex: 10, startColumnIndex:0, endColumnIndex: 10
-    })
+    // await this.sheet.loadCells({ // GridRange object
+    //   startRowIndex: 0, endRowIndex: 10, startColumnIndex:0, endColumnIndex: 10
+    // })
 
     const column_id = await this.getRealColumn(0)
 
@@ -176,6 +180,23 @@ class UserTab extends BaseTab {
   }
 }
 
+class EventsTab extends BaseTab {
+  queryEventsByDate = async (date = '12/11/2020') => {
+    const column_date = await this.getRealColumn(0)
+
+    console.log('column_date', column_date)
+
+    const items = column_date.filter((it) => it.value === date)
+    console.log(items)
+
+    return []
+  }
+
+  queryEventsInRange = async (startDate, endDate) => {
+    return []
+  }
+}
+
 class MySheets {
   constructor(doc_id) {
     this.DOC = null
@@ -193,13 +214,15 @@ class MySheets {
 
     await this.DOC.loadInfo() // loads document properties and worksheets
 
-
+    this.eventsSheet = new EventsTab(this.DOC, 0)
     this.userSheet = new UserTab(this.DOC, 1)
+
+    await this.eventsSheet.init()
     await this.userSheet.init()
 
     this.ready = true
 
-    debug('sheet initialized', this.userSheet.sheetId)
+    debug('sheets document initialized')
   }
 
   waitForInit = async () => {
