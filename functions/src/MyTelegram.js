@@ -1,6 +1,8 @@
 import axios from 'axios'
 import { BOT_TOKEN } from './helper/_AppConfigGenerated'
 import { mySheet } from './MySheets'
+import { getToday } from './helper/dates'
+import translations from './constants/translations'
 const Telegraf = require('telegraf')
 
 let bot
@@ -13,24 +15,11 @@ const getTgUser = (tgMessage) => {
   return { id, is_bot, first_name, username, language_code }
 }
 
-const renderEvent = (event) => {
-  const pureEvent = event.value || event
+const renderEvent = (event, dict) => dict.events.msgRenderFn(event.value || event, dict)
 
-  const inlineDayCounter = pureEvent.curr_day && pureEvent.all_days
-    ? `\nДень ${pureEvent.curr_day} з ${pureEvent.all_days}\n` : ''
-
-  const msg =
-`<b>${pureEvent.title}</b>
-${inlineDayCounter}
-<i>Больше информации: ${pureEvent.info}</i>
-`
-
-  return msg
-}
-
-const renderEvents = (events) => {
+const renderEvents = (events, dict) => {
   let finalMessage = ''
-  const textMessages = events.map((it) => renderEvent(it))
+  const textMessages = events.map((event) => renderEvent(event, dict))
 
   textMessages.forEach((it) => {
     finalMessage += it
@@ -42,40 +31,60 @@ const renderEvents = (events) => {
 
 export const getMyBot = (debugEnabled = false) => {
   bot = new Telegraf(BOT_TOKEN)
-  if (debugEnabled) {
-    bot.use(async (ctx, next) => {
-      const upd = ctx.update
-      // debug('update', upd)
+  // if (debugEnabled) {
+  //   bot.use(async (ctx, next) => {
+  //     const start = new Date()
+  //     await next()
+  //     const ms = new Date() - start
+  //     console.log('Response time: %sms', ms)
+  //   })
+  //
+  // }
+  bot.use((ctx, next) => {
+    // TODO: here you can personalize language
+    ctx.state.dict = translations.ru
 
-      mySheet.waitForInit()
-        .then(async () => {
-          const userAdded = await mySheet.userSheet?.addUser(getTgUser(upd))
+    return next()
+  })
+  bot.use(async (ctx, next) => {
+    const upd = ctx.update
+    // debug('update', upd)
 
-          debug('userAdded', userAdded)
-        })
-      await next()
-    })
-  }
+    mySheet.waitForInit()
+      .then(async () => {
+        const userAdded = await mySheet.userSheet?.addUser(getTgUser(upd))
+
+        debug('userAdded', userAdded)
+      })
+    await next()
+  })
   bot.hears('today', (ctx) => {
     mySheet.waitForInit()
       .then(() => {
-        mySheet.eventsSheet.queryEventsByDate()
+        mySheet.eventsSheet.queryEventsByDate(getToday())
           .then((events) => {
-            const sendingBack = renderEvents(events)
+            // debug('events.length', ctx.state.dict, ctx.state.dict.default_reply)
+            if (!events.length) {
+              debug('no events reply', ctx.state.dict.events.noEventsToday)
+              return ctx.reply(ctx.state.dict.events.noEventsToday)
+            }
+
+            const sendingBack = renderEvents(events, ctx.state.dict)
             debug(sendingBack)
 
             return ctx.replyWithHTML(sendingBack)
           })
           .catch((error) => {
             console.error(error)
-            return ctx.reply('today')
+            // TODO: send email
+            return ctx.reply('today we are sorry: technical problem')
           })
       })
       .catch((err) => {
         console.log('err', err)
       })
   })
-  bot.on('text', ({ replyWithHTML }) => replyWithHTML('<b>sup</b>'))
+  bot.on('text', ({ replyWithHTML, state }) => replyWithHTML(state.dict.default_reply))
   return bot
 }
 

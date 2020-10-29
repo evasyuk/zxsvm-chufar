@@ -7,11 +7,17 @@ const readValues = () => {
   const parseResult = {}
   const failedLines = []
 
-  if (process.env.MODE === undefined) {
-    throw Error('MODE variable is not specified. Can not proceed. Please, check ".env.dev" and "dev.production" files')
+  let filePath = process.env.MODE === 'DEV' ? envPathDev :  envPathProd
+  switch (process.env.MODE) {
+    case 'DEV':
+      filePath = envPathDev
+      break
+    case 'PROD':
+      filePath = envPathProd
+      break
+    default:
+      throw Error('MODE variable is not specified. Can not proceed. Please, check ".env.dev" and "dev.production" files')
   }
-
-  const filePath = process.env.MODE ? envPathDev :  envPathProd
 
   const lines = require('fs').readFileSync(filePath , 'utf-8')
     .split('\n')
@@ -56,7 +62,7 @@ ${exportLines}
 
   require('fs').writeFileSync(firebaseEnvPath, template)
 
-  console.log('\nAppConfigGenerated generated successfully\n')
+  console.log(`\nAppConfigGenerated generated successfully in ${process.env.MODE} mode\n`)
 }
 
 generateFileConfig(parseResult)

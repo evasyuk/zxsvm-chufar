@@ -123,7 +123,7 @@ class BaseTab {
     let shouldStop = false
 
     let step = 10
-    let startR = 1, endR = 50
+    let startR = 1, endR = 50000
     while (!shouldStop) {
       const interimValues = await this._readColumn(cIndex, startR, startR + step)
 
@@ -207,7 +207,8 @@ class EventsTab extends BaseTab {
       .filter((it) => it.formattedValue == date)
       .map((it) => it.rIndex)
 
-    const realItems = await this.getObjectsById(itemIds)
+    let realItems = await this.getObjectsById(itemIds)
+    realItems = realItems.filter((it) => !(it.value.disabled === true))
     debug('queryEventsByDate', date, realItems)
 
     return realItems
