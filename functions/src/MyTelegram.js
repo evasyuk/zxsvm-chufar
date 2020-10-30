@@ -17,7 +17,7 @@ const getTgUser = (tgMessage) => {
 
 const renderEvent = (event, dict) => dict.events.msgRenderFn(event.value || event, dict)
 
-const renderEvents = (events, dict) => {
+export const renderEvents = (events, dict) => {
   let finalMessage = ''
   const textMessages = events.map((event) => renderEvent(event, dict))
 
@@ -29,7 +29,10 @@ const renderEvents = (events, dict) => {
   return finalMessage.trimEnd()
 }
 
-export const getMyBot = (debugEnabled = false) => {
+export const getMyBot = () => {
+  if (bot) {
+    return bot
+  }
   bot = new Telegraf(BOT_TOKEN)
   // if (debugEnabled) {
   //   bot.use(async (ctx, next) => {
@@ -123,6 +126,27 @@ export const setWebhook = ({ token = BOT_TOKEN, whURL }) => {
       })
       .finally(() => {
         debug('setWebhook request finished')
+      })
+  })
+}
+
+export const sendMessage = ({ chat_id, text, token = BOT_TOKEN }) => {
+  const url = getTgMethod(token)('sendMessage')
+
+  return new Promise((resolve, reject) => {
+    axios.post(url, {
+      chat_id,
+      text,
+      parse_mode: 'HTML',
+    })
+      .then(({ data }) => {
+        resolve(data)
+      })
+      .catch((err) => {
+        reject(err)
+      })
+      .finally(() => {
+        debug('sendMessage request finished')
       })
   })
 }

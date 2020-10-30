@@ -9,6 +9,7 @@ require("@babel/register")({
 require('@babel/polyfill')
 require('./src/helper/debug')
 const app = require('./src/App').default
+const { handler60minutes } = require('./src/helper/timerHandler')
 
 // // Create and Deploy Your First Cloud Functions
 // // https://firebase.google.com/docs/functions/write-firebase-functions
@@ -23,3 +24,7 @@ exports.bot = functions.region('us-central1').https.onRequest(app)
 exports.info = functions.https.onRequest((req, res) => {
   res.send("/info")
 })
+
+exports.schedule = functions.pubsub
+  .schedule('every 60 minutes')
+  .onRun(handler60minutes)

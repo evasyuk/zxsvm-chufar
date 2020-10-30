@@ -1,17 +1,26 @@
 import express from 'express'
-import { getMyBot, setWebhook, handleUpdate } from './MyTelegram'
+import { setWebhook, handleUpdate } from './MyTelegram'
+import { handler60minutes } from './helper/timerHandler'
 
 import { BASE_URL, WEBHOOK_PATH, PRJ_NAME } from './helper/_AppConfigGenerated'
 
 const app = express()
 const cors = require('cors')
 
-getMyBot()
-
 app.use(cors({ origin: true }))
 
 app.get('/hello', (req, res) => {
   res.send(req.path)
+})
+
+app.get('/send', (req, res) => {
+  handler60minutes()
+    .then(() => {
+      console.log('success')
+    })
+    .finally(() => {
+      res.send('?')
+    })
 })
 
 app.post(`/${WEBHOOK_PATH}`, (req, res) => {
