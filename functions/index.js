@@ -19,12 +19,14 @@ const { handler60minutes } = require('./src/helper/timerHandler')
 //   response.send("Hello from Firebase!")
 // })
 
-exports.bot = functions.region('us-central1').https.onRequest(app)
+exports.bot = functions.region('us-west3').https.onRequest(app)
 
 exports.info = functions.https.onRequest((req, res) => {
   res.send("/info")
 })
 
-exports.schedule = functions.pubsub
+exports.schedule = functions
+  .region('us-central1')
+  .pubsub
   .schedule('every 60 minutes')
   .onRun(handler60minutes)

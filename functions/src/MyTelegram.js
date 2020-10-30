@@ -84,7 +84,7 @@ export const getMyBot = () => {
           })
       })
       .catch((err) => {
-        console.log('err', err)
+        console.error('err', err)
       })
   })
   bot.on('text', ({ replyWithHTML, state }) => replyWithHTML(state.dict.default_reply))
