@@ -1,6 +1,6 @@
-import { mySheet } from '../MySheets'
+import { mySheet } from '../modules/sheets/MySheets'
 import { getToday } from './dates'
-import { sendMessage, renderEvents } from '../MyTelegram'
+import { sendMessage, renderEvents } from '../modules/telegram/MyTelegram'
 import translations from '../constants/translations'
 
 const dict = translations.ru

@@ -6,7 +6,7 @@ require("@babel/register")({
 })
 require('@babel/polyfill')
 require('./src/helper/debug')
-const myTelegram = require('./src/MyTelegram')
+const myTelegram = require('./src/modules/telegram/MyTelegram')
 
 const bot = myTelegram.getMyBot(true)
 bot.launch()

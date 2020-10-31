@@ -1,5 +1,5 @@
 import express from 'express'
-import { setWebhook, handleUpdate } from './MyTelegram'
+import { setWebhook, handleUpdate } from './modules/telegram/MyTelegram'
 import { handler60minutes } from './helper/timerHandler'
 
 import { BASE_URL, WEBHOOK_PATH, PRJ_NAME } from './helper/_AppConfigGenerated'

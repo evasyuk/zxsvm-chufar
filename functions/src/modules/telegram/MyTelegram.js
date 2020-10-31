@@ -1,8 +1,8 @@
 import axios from 'axios'
-import { BOT_TOKEN } from './helper/_AppConfigGenerated'
-import { mySheet } from './MySheets'
-import { getToday } from './helper/dates'
-import translations from './constants/translations'
+import { BOT_TOKEN } from '../../helper/_AppConfigGenerated'
+import { mySheet } from '../sheets/MySheets'
+import { getToday } from '../../helper/dates'
+import translations from '../../constants/translations'
 const Telegraf = require('telegraf')
 
 let bot

@@ -1,6 +1,6 @@
 import { GoogleSpreadsheet } from 'google-spreadsheet'
-import { getSheetsCredentials } from './helper/meta'
-import { SHEETS_ID } from './helper/_AppConfigGenerated'
+import { getSheetsCredentials } from '../../helper/meta'
+import { SHEETS_ID } from '../../helper/_AppConfigGenerated'
 
 const ROWS_ABC = 'abcdefghijklmnopqrstuvwxyz'.toUpperCase().split('')
 
