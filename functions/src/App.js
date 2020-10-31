@@ -1,5 +1,5 @@
 import express from 'express'
-import { setWebhook, handleUpdate } from './modules/telegram/MyTelegram'
+import Bot from './modules/telegram'
 import { handler60minutes } from './helper/timerHandler'
 
 import { BASE_URL, WEBHOOK_PATH, PRJ_NAME } from './helper/_AppConfigGenerated'
@@ -46,7 +46,7 @@ app.post(`/${WEBHOOK_PATH}`, (req, res) => {
   >    entities: [ { offset: 0, length: 10, type: 'bold' } ]
   >  }
   */
-  handleUpdate(update)
+  Bot.handleUpdate(update)
     .finally(() => {
       res.send('success')
     })
@@ -70,7 +70,7 @@ app.post('/setWebhook', (req, res) => {
 
   whURL = isProd ? `${base}/bot/${whPath}` : `${base}/${PRJ_NAME}/us-central1/bot/${whPath}`
 
-  setWebhook({ whURL })
+  Bot.setWebhook({ whURL })
     .then(() => {
       res.send({ whURL })
     })

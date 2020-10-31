@@ -1,6 +1,6 @@
 import {mySheet} from "../../sheets/MySheets";
 import {getToday} from "../../../helper/dates";
-import renderEvents from "../view/renderEvents";
+import renderEvents from "../helper/renderEvents";
 
 const middleware = (ctx) => {
   mySheet.waitForInit()

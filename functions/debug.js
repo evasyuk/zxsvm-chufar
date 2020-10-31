@@ -6,11 +6,11 @@ require("@babel/register")({
 })
 require('@babel/polyfill')
 require('./src/helper/debug')
-const myTelegram = require('./src/modules/telegram/MyTelegram')
+const Bot = require('./src/modules/telegram').default
 
-const bot = myTelegram.getMyBot(true)
+const bot = Bot.getMyBot()
 bot.launch()
-  .then((what) => {
+  .then(() => {
     debug('bot polling is running')
   })
   .catch((err) => {

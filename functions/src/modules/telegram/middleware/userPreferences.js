@@ -1,4 +1,5 @@
-import {mySheet} from "../../sheets/MySheets";
+import { mySheet } from "../../sheets/MySheets";
+import { getTgUser } from "../helper";
 
 const middleware = async (ctx, next) => {
   const upd = ctx.update
