@@ -15,6 +15,14 @@ const translations = {
 ${inlineDayCounter}
 <i>Больше информации: ${pureEvent.info}</i>
 `
+      },
+      daylightEventRenderFn: (pureEvent) => {
+        return `
+<b>Восход</b>: ${pureEvent.sunrise}
+<b>Длительность</b>: ${pureEvent.duration}
+<b>Закат:</b> ${pureEvent.sunset}
+<b>Дельта:</b> ${pureEvent.delta}     
+`
       }
     },
   },
@@ -33,6 +41,14 @@ ${inlineDayCounter}
         return `<b>${pureEvent.title}</b>
 ${inlineDayCounter}
 <i>More info: ${pureEvent.info}</i>
+`
+      },
+      daylightEventRenderFn: (pureEvent) => {
+        return `
+<b>Sunrise</b>: ${pureEvent.sunrise}
+<b>Duration</b>: ${pureEvent.duration}
+<b>Sunset:</b> ${pureEvent.sunset}
+<b>Delta:</b> ${pureEvent.delta}     
 `
       }
     }

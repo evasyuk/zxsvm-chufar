@@ -219,11 +219,29 @@ class EventsTab extends BaseTab {
   }
 }
 
+class DaylightTab extends BaseTab {
+  queryEventsByDate = async (date = '12/11/2020') => {
+    const column_date = await this.getRealColumn(0)
+
+    const itemIds = column_date.values
+      .filter((it) => it.formattedValue == date)
+      .map((it) => it.rIndex)
+
+    let realItems = await this.getObjectsById(itemIds)
+    realItems = realItems.filter((it) => !(it.value.disabled === true))
+    debug('queryEventsByDate', date, realItems)
+
+    return realItems
+  }
+}
+
 class MySheets {
   constructor(doc_id) {
     this.DOC = null
     this.doc_id = doc_id
 
+    this.daylightSheet = null
+    this.eventsSheet = null
     this.userSheet = null
 
     this.ready = false
@@ -238,9 +256,11 @@ class MySheets {
 
     this.eventsSheet = new EventsTab(this.DOC, 0)
     this.userSheet = new UserTab(this.DOC, 1)
+    this.daylightSheet = new DaylightTab(this.DOC, 2)
 
     await this.eventsSheet.init()
     await this.userSheet.init()
+    await this.daylightSheet.init()
 
     this.ready = true
 
