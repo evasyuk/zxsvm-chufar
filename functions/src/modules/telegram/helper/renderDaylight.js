@@ -4,7 +4,7 @@ const renderDaylight = (events, dict) => {
   debug('events', JSON.stringify(events))
   let finalMessage = ''
 
-  const textMessages = events.map(_renderEvent)
+  const textMessages = events.map((it) => _renderEvent(it, dict))
 
   textMessages.forEach((it) => {
     finalMessage += it
