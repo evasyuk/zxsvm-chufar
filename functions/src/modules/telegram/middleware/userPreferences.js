@@ -7,11 +7,15 @@ const middleware = async (ctx, next) => {
 
   mySheet.waitForInit()
     .then(async () => {
-      const userAdded = await mySheet.userSheet?.addUser(getTgUser(upd))
+      const userState = await mySheet.userSheet?.addUser(getTgUser(upd))
 
-      debug('userAdded', userAdded)
+      ctx.state.userState = userState
+
+      debug('userState', JSON.stringify(userState))
     })
-  await next()
+    .finally(async () => {
+      await next()
+    })
 }
 
 export default middleware

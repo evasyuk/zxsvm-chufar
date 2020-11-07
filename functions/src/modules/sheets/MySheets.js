@@ -187,15 +187,14 @@ class UserTab extends BaseTab {
   }
 
   addUser = async (user) => {
-    const [rIndex] = await this.findExistingUser(user)
+    const [rIndex, realUser] = await this.findExistingUser(user)
 
     if (rIndex) {
-      // debug('record already exist. skipping..')
-      return false
+      return realUser
     }
 
     await this.sheet.addRow(user)
-    return true
+    return realUser
   }
 }
 

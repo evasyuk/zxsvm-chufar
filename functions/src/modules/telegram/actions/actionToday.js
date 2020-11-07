@@ -3,40 +3,79 @@ import {getToday} from "../../../helper/dates";
 import renderEvents from "../helper/renderEvents";
 import renderDaylight from "../helper/renderDaylight";
 
+const queryDaylight = (sheet, dict) => {
+  return new Promise((resolve, reject) => {
+    mySheet.daylightSheet.queryEventsByDate(getToday())
+      .then((events) => {
+        // debug('events.length', ctx.state.dict, ctx.state.dict.default_reply)
+        if (!events.length) {
+          debug('no daylight events to reply', dict.events.noEventsToday)
+          resolve([])
+          return
+        }
+
+        const sendingBack = renderDaylight(events, dict)
+        debug(sendingBack)
+
+        resolve(sendingBack)
+      })
+      .catch((err) => {
+        reject(err)
+      })
+  })
+}
+
+const queryMoonlight = (sheet, dict) => {
+  return new Promise((resolve, reject) => {
+    mySheet.eventsSheet.queryEventsByDate(getToday())
+      .then((events) => {
+        // debug('events.length', ctx.state.dict, ctx.state.dict.default_reply)
+        if (!events.length) {
+          debug('no events reply', dict.events.noEventsToday)
+          return
+        }
+
+        const sendingBack = renderEvents(events, dict)
+        debug(sendingBack)
+
+        resolve(sendingBack)
+      })
+      .catch((error) => {
+        // TODO: send email
+        reject(error)
+      })
+  })
+}
+
 const middleware = (ctx) => {
   mySheet.waitForInit()
-    .then(() => {
-      mySheet.daylightSheet.queryEventsByDate(getToday())
-        .then((events) => {
-          // debug('events.length', ctx.state.dict, ctx.state.dict.default_reply)
-          if (!events.length) {
-            debug('no daylight events to reply', ctx.state.dict.events.noEventsToday)
-            return
-          }
+    .then(async () => {
+      const promiseDaylight = queryDaylight(mySheet, ctx.state.dict)
+      const promiseMoonlight = queryMoonlight(mySheet, ctx.state.dict)
 
-          const sendingBack = renderDaylight(events, ctx.state.dict)
-          debug(sendingBack)
+      const promises = []
 
-          return ctx.replyWithHTML(sendingBack)
-        })
-      mySheet.eventsSheet.queryEventsByDate(getToday())
-        .then((events) => {
-          // debug('events.length', ctx.state.dict, ctx.state.dict.default_reply)
-          if (!events.length) {
-            debug('no events reply', ctx.state.dict.events.noEventsToday)
-            return ctx.reply(ctx.state.dict.events.noEventsToday)
-          }
+      if (ctx.state.userState.subscription_daylight) {
+        promises.push(promiseDaylight)
+      }
+      if (ctx.state.userState.subscription_moonlight) {
+        promises.push(promiseMoonlight)
+      }
 
-          const sendingBack = renderEvents(events, ctx.state.dict)
-          debug(sendingBack)
+      const replies = await Promise.all(promises)
 
-          return ctx.replyWithHTML(sendingBack)
-        })
-        .catch((error) => {
-          console.error(error)
-          // TODO: send email
-          return ctx.reply('today we are sorry: technical problem')
-        })
+      let finalAnswer = ''
+      replies.forEach((reply) => {
+        finalAnswer += reply
+        finalAnswer += '\n'
+      })
+      finalAnswer = finalAnswer.trimEnd()
+
+      if (finalAnswer) {
+        return ctx.replyWithHTML(finalAnswer)
+      } else {
+        return ctx.reply('today we are sorry: technical problem')
+      }
     })
     .catch((err) => {
       console.error('err', err)
