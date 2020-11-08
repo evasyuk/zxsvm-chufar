@@ -1,6 +1,7 @@
 import axios from "axios";
-import Telegraf from 'telegraf'
+import Telegraf from 'telegraf';
 import {BOT_TOKEN} from "../../helper/_AppConfigGenerated";
+import { setBotCommands } from './helper/setBotCommands';
 
 const getTgMethod = (TOKEN = BOT_TOKEN) => (method) => `https://api.telegram.org/bot${TOKEN}/${method}`
 
@@ -11,6 +12,8 @@ class Bot {
     }
 
     Bot.bot = new Telegraf(BOT_TOKEN)
+    setBotCommands(Bot.bot)
+
     return Bot.bot
   }
 
