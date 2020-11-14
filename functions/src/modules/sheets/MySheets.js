@@ -46,7 +46,29 @@ class BaseTab {
         cIndex,
       }
     }
+
     return row
+  }
+
+  _writeRow = async (rIndex, row) => {
+    let internalIndex = 0
+
+    let startC = 0, endC = row.length || 10
+
+    const magic = 10
+
+    const range = `${ROWS_ABC[startC]}${(rIndex - magic) < 1 ? 1 : (rIndex - magic)}:${ROWS_ABC[endC + magic]}${rIndex + magic}`
+    await this.sheet.loadCells(range)
+
+    for (let cIndex = startC; cIndex <= endC; cIndex += 1, internalIndex += 1) {
+      const cell = await this.sheet.getCell(rIndex, cIndex)
+      cell.value = row[cIndex]
+      if (cIndex === 0) {
+        cell.note = 'updated automatically'
+      }
+    }
+
+    await this.sheet.saveUpdatedCells(); // save all updates in one call
   }
 
   _readColumn = async (cIndex, startR = 1, endR = 10) => {
@@ -78,6 +100,17 @@ class BaseTab {
       rIndex,
       row,
     }
+  }
+
+  updateRow = async (rIndex, realObject) => {
+    const row = []
+    const existingRow = await this.getRealRow(rIndex)
+
+    existingRow.headerRow.forEach((key) => {
+      row.push(realObject[key])
+    })
+
+    await this._writeRow(rIndex, row)
   }
 
   getObjectById = async (rIndex) => {
@@ -195,6 +228,15 @@ class UserTab extends BaseTab {
 
     await this.sheet.addRow(user)
     return realUser
+  }
+
+  toggleSubscription = async (user, key) => {
+    const [rIndex, realUser] = await this.findExistingUser(user)
+
+    const updatedUser = Object.assign({}, realUser, { [key]: !realUser[key] })
+    await this.updateRow(rIndex, updatedUser)
+
+    return updatedUser
   }
 }
 

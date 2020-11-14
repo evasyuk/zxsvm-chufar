@@ -2,6 +2,9 @@ const translations = {
   ru: {
     errorOccurred: 'today we are sorry: technical problem',
     default_reply: '<b>чекак</b>',
+    subscription: {
+      listOfActiveSubscriptions: 'Список доступных подписок',
+    },
     events: {
       noEventsToday: 'Сегодня нет события с особым вниманием',
       inlineDayCounterFn: (pureEvent) => {
@@ -29,6 +32,9 @@ ${inlineDayCounter}
   en: {
     errorOccurred: 'today we are sorry: technical problem',
     default_reply: '<b>sup</b>',
+    subscription: {
+      listOfActiveSubscriptions: 'List of available subscriptions',
+    },
     events: {
       noEventsToday: 'No events for today',
       inlineDayCounterFn: (pureEvent) => {

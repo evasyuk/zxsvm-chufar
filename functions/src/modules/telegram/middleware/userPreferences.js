@@ -3,7 +3,7 @@ import { getTgUser } from "../helper";
 
 const middleware = async (ctx, next) => {
   const upd = ctx.update
-  // debug('update', upd)
+  console.log('ctx.update ? ', ctx.update)
 
   mySheet.waitForInit()
     .then(async () => {
@@ -14,7 +14,8 @@ const middleware = async (ctx, next) => {
       debug('userState', JSON.stringify(userState))
     })
     .finally(async () => {
-      await next()
+      console.log('next ? ', next)
+      return typeof next === 'function' ? next(ctx) : Promise.resolve()
     })
 }
 
